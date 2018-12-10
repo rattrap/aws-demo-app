@@ -7,27 +7,27 @@ import (
 	"net/http"
 )
 
-type HomeResponse struct {
+type home struct {
 	Message string `json:"status,omitempty"`
 }
 
-func GetHome(w http.ResponseWriter, _ *http.Request) {
-	b := HomeResponse{Message: "Hello, World!"}
-	json.NewEncoder(w).Encode(b)
-}
-
-type StatusResponse struct {
+type status struct {
 	Status string `json:"status,omitempty"`
 }
 
-func GetStatus(w http.ResponseWriter, _ *http.Request) {
-	b := StatusResponse{Status: "idle"}
+func getHome(w http.ResponseWriter, _ *http.Request) {
+	b := home{Message: "Hello, World!"}
+	json.NewEncoder(w).Encode(b)
+}
+
+func getStatus(w http.ResponseWriter, _ *http.Request) {
+	b := status{Status: "idle"}
 	json.NewEncoder(w).Encode(b)
 }
 
 func main() {
 	router := mux.NewRouter()
-	router.HandleFunc("/", GetHome).Methods("GET")
-	router.HandleFunc("/status", GetStatus).Methods("GET")
+	router.HandleFunc("/", getHome).Methods("GET")
+	router.HandleFunc("/status", getStatus).Methods("GET")
 	log.Fatal(http.ListenAndServe(":8123", router))
 }
