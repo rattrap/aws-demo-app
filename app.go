@@ -5,10 +5,18 @@ import (
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+	"os"
+	"strings"
 )
 
+type env struct {
+	Key   string `json:"key"`
+	Value string `json:"value"`
+}
+
 type home struct {
-	Message string `json:"status,omitempty"`
+	Hostname string `json:"hostname,omitempty"`
+	Envs     []env  `json:"envs,omitempty"`
 }
 
 type status struct {
@@ -16,7 +24,15 @@ type status struct {
 }
 
 func getHome(w http.ResponseWriter, _ *http.Request) {
-	b := home{Message: "Hello, World!"}
+	hostname, _ := os.Hostname()
+
+	envs := []env{}
+	for _, e := range os.Environ() {
+		pair := strings.Split(e, "=")
+		envs = append(envs, env{Key: pair[0], Value: pair[1]})
+	}
+
+	b := home{Hostname: hostname, Envs: envs}
 	json.NewEncoder(w).Encode(b)
 }
 
